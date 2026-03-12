@@ -1,4 +1,4 @@
-<%@ page import="java.util.List" %>
+<%@ page import="java.util.List, java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -19,21 +19,35 @@
   <%
     }
   %>
-  <ul>
-    <%
-      List<String> patients = (List<String>) request.getAttribute("patientNames");
-      if (patients != null)
-      {
-        for (String patient : patients)
-        {
-          String href = "dummypage.html";
-    %>
-    <li><a href="<%=href%>"><%=patient%></a>
-    </li>
-    <%  }
-      }
-    %>
-  </ul>
+
+  <%
+    List<String> columnNames = (List<String>) request.getAttribute("columnNames");
+    List<Map<String, String>> patientData = (List<Map<String, String>>) request.getAttribute("patientData");
+    if (columnNames != null && patientData != null)
+    {
+  %>
+  <table border="1">
+    <thead>
+      <tr>
+        <% for (String columnName : columnNames) { %>
+          <th><%= columnName %></th>
+        <% } %>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (Map<String, String> patient : patientData) { %>
+        <tr>
+          <% for (String columnName : columnNames) { %>
+            <td><%= patient.get(columnName) %></td>
+          <% } %>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+  <%
+    }
+  %>
+
 </div>
 <jsp:include page="/footer.jsp"/>
 </body>

@@ -12,6 +12,7 @@ import uk.ac.ucl.model.ModelFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The ViewPatientListServlet handles HTTP requests for displaying the full list of patients.
@@ -43,12 +44,13 @@ public class ViewPatientListServlet extends HttpServlet
       // The Model handles the actual data processing and data retrieval.
       Model model = ModelFactory.getModel();
 
-      // 2. Retrieve the list of patient names from the model.
-      List<String> patientNames = model.getPatientNames();
+      // 2. Retrieve column names and all row data from the model.
+      List<String> columnNames = model.getColumnNames();
+      List<Map<String, String>> patientData = model.getPatientData();
 
       // 3. Add the data to the request object.
-      // This makes the 'patientNames' list accessible to the JSP page for rendering.
-      request.setAttribute("patientNames", patientNames);
+      request.setAttribute("columnNames", columnNames);
+      request.setAttribute("patientData", patientData);
 
       // 4. Invoke the JSP for display.
       // RequestDispatcher.forward() is used to send the request/response objects to another resource (JSP).
