@@ -26,29 +26,56 @@
     }
   %>
 
+  <%
+    List<String> columnNames = (List<String>) request.getAttribute("columnNames");
+    List<String> selectedColumns = (List<String>) request.getAttribute("selectedColumns");
+    List<Map<String, String>> patientData = (List<Map<String, String>>) request.getAttribute("patientData");
+  %>
+
   <form method="GET" action="patientList">
-    <input type="text" name="searchstring" placeholder="Search all columns..."/>
-    <input type="submit" value="Search"/>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div>
+        <input type="text" name="searchstring" placeholder="Search all columns..."/>
+        <input type="submit" value="Search"/>
+        <a href="patientList"><button type="button">Clear</button></a>
+      </div>
+      <div style="border: 1px solid #ccc; padding: 8px;">
+        <strong>Columns:</strong>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0;">
+          <% if (columnNames != null) { for (String col : columnNames) { %>
+            <label style="white-space: nowrap;">
+              <input type="checkbox" name="col" value="<%= col %>"
+                <%= (selectedColumns != null && selectedColumns.contains(col)) ? "checked" : "" %>/>
+              <%= col %>
+            </label>
+          <% } } %>
+        </div>
+        <input type="submit" value="Apply"/>
+      </div>
+    </div>
   </form>
 
   <%
-    List<String> columnNames = (List<String>) request.getAttribute("columnNames");
-    List<Map<String, String>> patientData = (List<Map<String, String>>) request.getAttribute("patientData");
-    if (columnNames != null && patientData != null)
+    if (selectedColumns != null && patientData != null)
     {
+      StringBuilder colParams = new StringBuilder();
+      for (String col : selectedColumns) colParams.append("&col=").append(col);
   %>
   <table>
     <thead>
       <tr>
-        <% for (String columnName : columnNames) { %>
-          <th><%= columnName %> <a href="patientList?sort=<%= columnName %>">▲</a> <a href="patientList?sortDesc=<%= columnName %>">▼</a></th>
+        <% for (String columnName : selectedColumns) { %>
+          <th><%= columnName %>
+            <a href="patientList?sort=<%= columnName %><%= colParams %>">▲</a>
+            <a href="patientList?sortDesc=<%= columnName %><%= colParams %>">▼</a>
+          </th>
         <% } %>
       </tr>
     </thead>
     <tbody>
       <% for (Map<String, String> patient : patientData) { %>
         <tr>
-          <% for (String columnName : columnNames) { %>
+          <% for (String columnName : selectedColumns) { %>
             <td><%= patient.get(columnName) %></td>
           <% } %>
         </tr>

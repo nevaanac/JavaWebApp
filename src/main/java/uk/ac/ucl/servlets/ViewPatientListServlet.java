@@ -11,6 +11,7 @@ import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.ModelFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -59,8 +60,15 @@ public class ViewPatientListServlet extends HttpServlet
       else
         patientData = model.getPatientData();
 
-      // 3. Add the data to the request object.
+      // 3. Determine which columns to display.
+      String[] selectedCols = request.getParameterValues("col");
+      List<String> selectedColumns = (selectedCols != null && selectedCols.length > 0)
+          ? Arrays.asList(selectedCols)
+          : columnNames;
+
+      // 4. Add the data to the request object.
       request.setAttribute("columnNames", columnNames);
+      request.setAttribute("selectedColumns", selectedColumns);
       request.setAttribute("patientData", patientData);
 
       // 4. Invoke the JSP for display.
