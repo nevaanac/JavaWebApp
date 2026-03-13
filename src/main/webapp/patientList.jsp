@@ -33,6 +33,7 @@
   %>
 
   <a href="editPatient"><button>Add Patient</button></a>
+  <a href="saveJson"><button>Save as JSON</button></a>
 
   <form method="GET" action="patientList">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">

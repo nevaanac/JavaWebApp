@@ -11,8 +11,10 @@ import java.util.Map;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+import uk.ac.ucl.Column;
 import uk.ac.ucl.DataFrame;
 import uk.ac.ucl.DataLoader;
+import uk.ac.ucl.JSONWriter;
 
 public class Model {
   private final ArrayList<String> columnNames;
@@ -62,6 +64,19 @@ public class Model {
 
   public void deletePatient(int index) {
     allPatientData.remove(index);
+  }
+
+  public DataFrame toDataFrame() {
+    DataFrame df = new DataFrame();
+    for (String col : columnNames) df.addColumn(new Column(col));
+    for (Map<String, String> row : allPatientData) {
+      for (String col : columnNames) df.addValue(col, row.getOrDefault(col, ""));
+    }
+    return df;
+  }
+
+  public void saveAsJson(String filePath) throws IOException {
+    JSONWriter.write(toDataFrame(), filePath);
   }
 
   public void saveData() throws IOException {

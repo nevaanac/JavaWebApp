@@ -1,3 +1,4 @@
+uk/ac/ucl/JSONWriter.class
 uk/ac/ucl/DataLoader.class
 uk/ac/ucl/main/Main.class
 uk/ac/ucl/servlets/EditPatientServlet.class
@@ -6,4 +7,5 @@ uk/ac/ucl/servlets/DeletePatientServlet.class
 uk/ac/ucl/Column.class
 uk/ac/ucl/model/Model.class
 uk/ac/ucl/servlets/ViewPatientListServlet.class
+uk/ac/ucl/servlets/SaveJsonServlet.class
 uk/ac/ucl/model/ModelFactory.class
