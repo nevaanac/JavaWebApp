@@ -1,4 +1,5 @@
 package uk.ac.ucl.model;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,20 @@ public class Model {
     }
     return patientDataList;
   }
-  // A search servlet should pass the search words as parameters in method calls to the Model
-  
+
+  public List<Map<String, String>> searchFor(String keyword) {
+    List<Map<String, String>> results = new ArrayList<>();
+    for (Map<String, String> patient : getPatientData()) {
+      for (String value : patient.values()) {
+        if (value != null && value.toLowerCase().contains(keyword.toLowerCase())) {
+          results.add(patient);
+        }
+      }
+
+    }
+    return results;
+  }
+
   public List<Map<String, String>> sortColumn(String columnName) {
     List<Map<String, String>> rows = getPatientData();
     for (int i = 0; i < rows.size(); i++) {
@@ -39,8 +52,10 @@ public class Model {
       for (int j = i + 1; j < rows.size(); j++) {
         String a = rows.get(j).getOrDefault(columnName, "");
         String b = rows.get(minIndex).getOrDefault(columnName, "");
-        if (a == null) a = "";
-        if (b == null) b = "";
+        if (a == null)
+          a = "";
+        if (b == null)
+          b = "";
         if (a.compareTo(b) < 0) {
           minIndex = j;
         }

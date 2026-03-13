@@ -46,10 +46,13 @@ public class ViewPatientListServlet extends HttpServlet
 
       // 2. Retrieve column names and all row data from the model.
       List<String> columnNames = model.getColumnNames();
+      String searchString = request.getParameter("searchstring");
       String sortBy = request.getParameter("sort");
       String sortDesc = request.getParameter("sortDesc");
       List<Map<String, String>> patientData;
-      if (sortDesc != null && !sortDesc.isEmpty())
+      if (searchString != null && !searchString.trim().isEmpty())
+        patientData = model.searchFor(searchString);
+      else if (sortDesc != null && !sortDesc.isEmpty())
         patientData = model.reversedSortColumn(sortDesc);
       else if (sortBy != null && !sortBy.isEmpty())
         patientData = model.sortColumn(sortBy);

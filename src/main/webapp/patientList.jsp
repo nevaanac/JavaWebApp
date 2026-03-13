@@ -26,6 +26,11 @@
     }
   %>
 
+  <form method="GET" action="patientList">
+    <input type="text" name="searchstring" placeholder="Search all columns..."/>
+    <input type="submit" value="Search"/>
+  </form>
+
   <%
     List<String> columnNames = (List<String>) request.getAttribute("columnNames");
     List<Map<String, String>> patientData = (List<Map<String, String>>) request.getAttribute("patientData");
