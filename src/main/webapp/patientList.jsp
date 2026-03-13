@@ -32,6 +32,8 @@
     List<Map<String, String>> patientData = (List<Map<String, String>>) request.getAttribute("patientData");
   %>
 
+  <a href="editPatient"><button>Add Patient</button></a>
+
   <form method="GET" action="patientList">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
       <div>
@@ -70,6 +72,7 @@
             <a href="patientList?sortDesc=<%= columnName %><%= colParams %>">▼</a>
           </th>
         <% } %>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -78,6 +81,13 @@
           <% for (String columnName : selectedColumns) { %>
             <td><%= patient.get(columnName) %></td>
           <% } %>
+          <td>
+            <a href="editPatient?index=<%= patient.get("__idx__") %>">Edit</a>
+            <form method="POST" action="deletePatient" style="display:inline">
+              <input type="hidden" name="index" value="<%= patient.get("__idx__") %>"/>
+              <button type="submit">Delete</button>
+            </form>
+          </td>
         </tr>
       <% } %>
     </tbody>

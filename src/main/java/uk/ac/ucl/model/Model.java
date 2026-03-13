@@ -1,46 +1,92 @@
 package uk.ac.ucl.model;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
 import uk.ac.ucl.DataFrame;
 import uk.ac.ucl.DataLoader;
 
 public class Model {
-  private DataFrame dataFrame;
-  private ArrayList<String> columnNames;
+  private final ArrayList<String> columnNames;
+  private final List<Map<String, String>> allPatientData;
+  private final String filePath;
 
   public Model(String filePath) {
-    this.dataFrame = DataLoader.loadData(filePath);
+    this.filePath = filePath;
+    DataFrame dataFrame = DataLoader.loadData(filePath);
     this.columnNames = dataFrame.getColumnNames();
+    this.allPatientData = new ArrayList<>();
+    for (int i = 0; i < dataFrame.getRowCount(); i++) {
+      Map<String, String> row = new HashMap<>();
+      for (String col : columnNames) {
+        row.put(col, dataFrame.getValue(col, i));
+      }
+      allPatientData.add(row);
+    }
   }
 
   public List<String> getColumnNames() {
     return columnNames;
   }
 
+  // Returns copies of all rows, each with "__idx__" set to its original index.
   public List<Map<String, String>> getPatientData() {
-    List<Map<String, String>> patientDataList = new ArrayList<>();
-
-    for (int i = 0; i < dataFrame.getRowCount(); i++) {
-      Map<String, String> patientData = new java.util.HashMap<>();
-      for (String columnName : columnNames) {
-        patientData.put(columnName, dataFrame.getValue(columnName, i));
-      }
-      patientDataList.add(patientData);
+    List<Map<String, String>> result = new ArrayList<>();
+    for (int i = 0; i < allPatientData.size(); i++) {
+      Map<String, String> copy = new HashMap<>(allPatientData.get(i));
+      copy.put("__idx__", String.valueOf(i));
+      result.add(copy);
     }
-    return patientDataList;
+    return result;
+  }
+
+  public Map<String, String> getPatient(int index) {
+    return allPatientData.get(index);
+  }
+
+  public void addPatient(Map<String, String> patient) {
+    allPatientData.add(new HashMap<>(patient));
+  }
+
+  public void updatePatient(int index, Map<String, String> patient) {
+    allPatientData.set(index, new HashMap<>(patient));
+  }
+
+  public void deletePatient(int index) {
+    allPatientData.remove(index);
+  }
+
+  public void saveData() throws IOException {
+    try (Writer writer = new FileWriter(filePath);
+         CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(columnNames.toArray(new String[0])))) {
+      for (Map<String, String> row : allPatientData) {
+        List<String> values = new ArrayList<>();
+        for (String col : columnNames) {
+          values.add(row.getOrDefault(col, ""));
+        }
+        printer.printRecord(values);
+      }
+    }
   }
 
   public List<Map<String, String>> searchFor(String keyword) {
     List<Map<String, String>> results = new ArrayList<>();
     for (Map<String, String> patient : getPatientData()) {
-      for (String value : patient.values()) {
-        if (value != null && value.toLowerCase().contains(keyword.toLowerCase())) {
+      for (Map.Entry<String, String> entry : patient.entrySet()) {
+        if (!"__idx__".equals(entry.getKey()) && entry.getValue() != null
+            && entry.getValue().toLowerCase().contains(keyword.toLowerCase())) {
           results.add(patient);
+          break;
         }
       }
-
     }
     return results;
   }
@@ -52,10 +98,8 @@ public class Model {
       for (int j = i + 1; j < rows.size(); j++) {
         String a = rows.get(j).getOrDefault(columnName, "");
         String b = rows.get(minIndex).getOrDefault(columnName, "");
-        if (a == null)
-          a = "";
-        if (b == null)
-          b = "";
+        if (a == null) a = "";
+        if (b == null) b = "";
         if (a.compareTo(b) < 0) {
           minIndex = j;
         }
