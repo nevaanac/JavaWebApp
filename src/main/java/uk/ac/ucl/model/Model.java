@@ -30,11 +30,29 @@ public class Model {
     }
     return patientDataList;
   }
+  // A search servlet should pass the search words as parameters in method calls to the Model
+  
+  public List<Map<String, String>> sortColumn(String columnName) {
+    List<Map<String, String>> rows = getPatientData();
+    for (int i = 0; i < rows.size(); i++) {
+      int minIndex = i;
+      for (int j = i + 1; j < rows.size(); j++) {
+        String a = rows.get(j).getOrDefault(columnName, "");
+        String b = rows.get(minIndex).getOrDefault(columnName, "");
+        if (a == null) a = "";
+        if (b == null) b = "";
+        if (a.compareTo(b) < 0) {
+          minIndex = j;
+        }
+      }
+      Map<String, String> temp = rows.get(i);
+      rows.set(i, rows.get(minIndex));
+      rows.set(minIndex, temp);
+    }
+    return rows;
+  }
 
-  // This also returns dummy data. The real version should use the keyword
-  // parameter to search
-  // the data and return a list of matching items.
-  public List<String> searchFor(String keyword) {
-    return List.of("Search keyword is: " + keyword, "result1", "result2", "result3");
+  public List<Map<String, String>> reversedSortColumn(String columnName) {
+    return sortColumn(columnName).reversed();
   }
 }

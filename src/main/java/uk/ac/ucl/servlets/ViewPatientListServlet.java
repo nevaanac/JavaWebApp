@@ -46,7 +46,15 @@ public class ViewPatientListServlet extends HttpServlet
 
       // 2. Retrieve column names and all row data from the model.
       List<String> columnNames = model.getColumnNames();
-      List<Map<String, String>> patientData = model.getPatientData();
+      String sortBy = request.getParameter("sort");
+      String sortDesc = request.getParameter("sortDesc");
+      List<Map<String, String>> patientData;
+      if (sortDesc != null && !sortDesc.isEmpty())
+        patientData = model.reversedSortColumn(sortDesc);
+      else if (sortBy != null && !sortBy.isEmpty())
+        patientData = model.sortColumn(sortBy);
+      else
+        patientData = model.getPatientData();
 
       // 3. Add the data to the request object.
       request.setAttribute("columnNames", columnNames);
@@ -57,12 +65,12 @@ public class ViewPatientListServlet extends HttpServlet
       ServletContext context = getServletContext();
       RequestDispatcher dispatch = context.getRequestDispatcher("/patientList.jsp");
       dispatch.forward(request, response);
-    } catch (IOException e) {
+    } catch (Exception e) {
       // 5. Exception Handling.
-      // If there is an issue loading the model or data, log the error and forward to a dedicated error page.
-      request.setAttribute("errorMessage", "Error loading data: " + e.getMessage());
+      // If there is an issue loading the model or data, log the error and display it on the patient list page.
+      request.setAttribute("errorMessage", "Error: " + e.getMessage());
       ServletContext context = getServletContext();
-      RequestDispatcher dispatch = context.getRequestDispatcher("/error.jsp");
+      RequestDispatcher dispatch = context.getRequestDispatcher("/patientList.jsp");
       dispatch.forward(request, response);
     }
   }

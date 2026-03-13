@@ -5,6 +5,12 @@
 <head>
   <jsp:include page="/meta.jsp"/>
   <title>Patient Data App</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; font-family: sans-serif; font-size: 14px; }
+    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+    th { background-color: #f0f0f0; font-weight: bold; }
+    tr:nth-child(even) { background-color: #fafafa; }
+  </style>
 </head>
 <body>
 <jsp:include page="/header.jsp"/>
@@ -26,11 +32,11 @@
     if (columnNames != null && patientData != null)
     {
   %>
-  <table border="1">
+  <table>
     <thead>
       <tr>
         <% for (String columnName : columnNames) { %>
-          <th><%= columnName %></th>
+          <th><%= columnName %> <a href="patientList?sort=<%= columnName %>">▲</a> <a href="patientList?sortDesc=<%= columnName %>">▼</a></th>
         <% } %>
       </tr>
     </thead>
