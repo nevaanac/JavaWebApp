@@ -20,7 +20,7 @@ All patient records are displayed in a scrollable HTML table on the webpage. The
 
 ### 3. Search
 
-A search bar allows users to quickly filter the table. The search works across all columns and updates the visible rows in real time. Matching is case-insensitive and supports partial text matches.
+A search bar allows users to search a keyword. The keyword is searched across all columns and updates the visible rows in real time. Matching is case-insensitive and supports partial text matches.
 
 ### 4. Sorting
 
@@ -35,7 +35,7 @@ Users can choose which columns to display using checkboxes above the table. Colu
 The application supports basic data management operations. Users can:
 
 * add new patient records
-* edit existing records using a form
+* edit existing records
 * delete rows from the table
 
 Any changes made are immediately saved by rewriting the CSV file.
@@ -46,12 +46,12 @@ The dataset can be downloaded as a JSON file. The `JSONWriter` class converts th
 
 ### 8. Data Visualisation
 
-Two charts are displayed below the table:
+Two graphs are displayed below the table:
 
-* a **Gender Distribution** pie chart
-* a **Race Distribution** bar chart
+* a **Gender Distribution** bar graph
+* a **Race Distribution** bar graph
 
-These charts are rendered using Chart.js and update based on the data currently visible in the table.
+These graphs update based on the data currently visible in the table.
 
 ---
 
@@ -59,7 +59,7 @@ These charts are rendered using Chart.js and update based on the data currently 
 
 * The application follows the **Model–View–Controller (MVC)** design pattern:
 
-  * **Model** handles the data and core logic.
+  * **Model** handles the data and logic.
   * **Servlets** act as controllers that process user requests.
   * **JSP pages** provide the user interface.
 

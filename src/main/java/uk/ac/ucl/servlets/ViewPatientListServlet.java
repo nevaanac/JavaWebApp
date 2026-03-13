@@ -12,6 +12,7 @@ import uk.ac.ucl.model.ModelFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +42,10 @@ public class ViewPatientListServlet extends HttpServlet
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
   {
     try {
-      // 1. Get the singleton instance of the Model.
+      // Get the singleton instance of the Model.
       // The Model handles the actual data processing and data retrieval.
       Model model = ModelFactory.getModel();
-
-      // 2. Retrieve column names and all row data from the model.
+      
       List<String> columnNames = model.getColumnNames();
       String searchString = request.getParameter("searchstring");
       String sortBy = request.getParameter("sort");
@@ -60,24 +60,35 @@ public class ViewPatientListServlet extends HttpServlet
       else
         patientData = model.getPatientData();
 
-      // 3. Determine which columns to display.
       String[] selectedCols = request.getParameterValues("col");
       List<String> selectedColumns = (selectedCols != null && selectedCols.length > 0)
           ? Arrays.asList(selectedCols)
           : columnNames;
 
-      // 4. Add the data to the request object.
+
+      Map<String, Integer> genderCounts = new LinkedHashMap<>();
+      Map<String, Integer> raceCounts   = new LinkedHashMap<>();
+      for (Map<String, String> p : patientData) {
+        String g = p.getOrDefault("GENDER", ""); if (g.isEmpty()) g = "Unknown";
+        String r = p.getOrDefault("RACE",   ""); if (r.isEmpty()) r = "Unknown";
+        genderCounts.merge(g, 1, Integer::sum);
+        raceCounts.merge(r, 1, Integer::sum);
+      }
+      request.setAttribute("genderCounts", genderCounts);
+      request.setAttribute("raceCounts",   raceCounts);
+
+      // 5. Add the data to the request object.
       request.setAttribute("columnNames", columnNames);
       request.setAttribute("selectedColumns", selectedColumns);
       request.setAttribute("patientData", patientData);
 
-      // 4. Invoke the JSP for display.
+      // Invoke the JSP for display.
       // RequestDispatcher.forward() is used to send the request/response objects to another resource (JSP).
       ServletContext context = getServletContext();
       RequestDispatcher dispatch = context.getRequestDispatcher("/patientList.jsp");
       dispatch.forward(request, response);
     } catch (Exception e) {
-      // 5. Exception Handling.
+      // Exception Handling.
       // If there is an issue loading the model or data, log the error and display it on the patient list page.
       request.setAttribute("errorMessage", "Error: " + e.getMessage());
       ServletContext context = getServletContext();
@@ -98,4 +109,6 @@ public class ViewPatientListServlet extends HttpServlet
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     doGet(request, response);
   }
+
+
 }
