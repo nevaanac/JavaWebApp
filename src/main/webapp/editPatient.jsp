@@ -5,12 +5,6 @@
 <head>
   <jsp:include page="/meta.jsp"/>
   <title>Patient Data App</title>
-  <style>
-    table { border-collapse: collapse; font-family: sans-serif; font-size: 14px; }
-    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
-    th { background-color: #f0f0f0; font-weight: bold; }
-    input[type="text"] { width: 300px; }
-  </style>
 </head>
 <body>
 <jsp:include page="/header.jsp"/>
@@ -21,23 +15,25 @@
     Integer index = (Integer) request.getAttribute("index");
     boolean isEdit = (index != null);
   %>
-  <h2><%= isEdit ? "Edit Patient" : "Add Patient" %></h2>
-  <form method="POST" action="editPatient">
-    <% if (isEdit) { %>
-      <input type="hidden" name="index" value="<%= index %>"/>
-    <% } %>
-    <table>
-      <% for (String col : columnNames) { %>
-        <tr>
-          <th><%= col %></th>
-          <td><input type="text" name="<%= col %>" value="<%= patient != null ? patient.getOrDefault(col, "") : "" %>"/></td>
-        </tr>
+  <div class="form-card">
+    <h2><%= isEdit ? "Edit Patient" : "Add Patient" %></h2>
+    <form method="POST" action="editPatient">
+      <% if (isEdit) { %>
+        <input type="hidden" name="index" value="<%= index %>"/>
       <% } %>
-    </table>
-    <br/>
-    <input type="submit" value="<%= isEdit ? "Save" : "Add" %>"/>
-    <a href="patientList"><button type="button">Cancel</button></a>
-  </form>
+      <% for (String col : columnNames) { %>
+        <div class="form-row">
+          <label><%= col %></label>
+          <input type="text" name="<%= col %>"
+            value="<%= patient != null ? patient.getOrDefault(col, "") : "" %>"/>
+        </div>
+      <% } %>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><%= isEdit ? "Save Changes" : "Add Patient" %></button>
+        <a href="patientList" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
 </div>
 <jsp:include page="/footer.jsp"/>
 </body>

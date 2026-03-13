@@ -1,4 +1,3 @@
-<div>
+<div class="header">
   <h1>Patient Data App</h1>
-  <div class="clearBoth"></div>
 </div>

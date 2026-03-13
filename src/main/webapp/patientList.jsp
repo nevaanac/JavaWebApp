@@ -5,97 +5,94 @@
 <head>
   <jsp:include page="/meta.jsp"/>
   <title>Patient Data App</title>
-  <style>
-    table { border-collapse: collapse; width: 100%; font-family: sans-serif; font-size: 14px; }
-    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
-    th { background-color: #f0f0f0; font-weight: bold; }
-    tr:nth-child(even) { background-color: #fafafa; }
-  </style>
 </head>
 <body>
 <jsp:include page="/header.jsp"/>
 <div class="main">
-  <h2>Patients:</h2>
-  <%
-    String errorMessage = (String) request.getAttribute("errorMessage");
-    if (errorMessage != null)
-    {
-  %>
-      <p style="color: red;"><%= errorMessage %></p>
-  <%
-    }
-  %>
 
   <%
-    List<String> columnNames = (List<String>) request.getAttribute("columnNames");
+    String errorMessage = (String) request.getAttribute("errorMessage");
+    if (errorMessage != null) {
+  %>
+    <div class="error-msg"><%= errorMessage %></div>
+  <% } %>
+
+  <%
+    List<String> columnNames    = (List<String>) request.getAttribute("columnNames");
     List<String> selectedColumns = (List<String>) request.getAttribute("selectedColumns");
     List<Map<String, String>> patientData = (List<Map<String, String>>) request.getAttribute("patientData");
   %>
 
-  <a href="editPatient"><button>Add Patient</button></a>
-  <a href="saveJson"><button>Save as JSON</button></a>
+  <div class="toolbar">
+    <a href="editPatient" class="btn btn-success">+ Add Patient</a>
+    <a href="saveJson"    class="btn btn-secondary">&#8595; Save as JSON</a>
+  </div>
 
   <form method="GET" action="patientList">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
+    <div class="controls">
+      <div class="search-group">
         <input type="text" name="searchstring" placeholder="Search all columns..."/>
-        <input type="submit" value="Search"/>
-        <a href="patientList"><button type="button">Clear</button></a>
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a href="patientList" class="btn btn-secondary">Clear</a>
       </div>
-      <div style="border: 1px solid #ccc; padding: 8px;">
-        <strong>Columns:</strong>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0;">
+      <div class="col-selector">
+        <strong>Visible Columns</strong>
+        <div class="col-checkboxes">
           <% if (columnNames != null) { for (String col : columnNames) { %>
-            <label style="white-space: nowrap;">
+            <label>
               <input type="checkbox" name="col" value="<%= col %>"
                 <%= (selectedColumns != null && selectedColumns.contains(col)) ? "checked" : "" %>/>
               <%= col %>
             </label>
           <% } } %>
         </div>
-        <input type="submit" value="Apply"/>
+        <button type="submit" class="btn btn-secondary">Apply</button>
       </div>
     </div>
   </form>
 
   <%
-    if (selectedColumns != null && patientData != null)
-    {
+    if (selectedColumns != null && patientData != null) {
       StringBuilder colParams = new StringBuilder();
       for (String col : selectedColumns) colParams.append("&col=").append(col);
   %>
-  <table>
-    <thead>
-      <tr>
-        <% for (String columnName : selectedColumns) { %>
-          <th><%= columnName %>
-            <a href="patientList?sort=<%= columnName %><%= colParams %>">▲</a>
-            <a href="patientList?sortDesc=<%= columnName %><%= colParams %>">▼</a>
-          </th>
-        <% } %>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for (Map<String, String> patient : patientData) { %>
+  <div class="table-wrapper">
+    <table>
+      <thead>
         <tr>
           <% for (String columnName : selectedColumns) { %>
-            <td><%= patient.get(columnName) %></td>
+            <th>
+              <%= columnName %>
+              <span class="sort-links">
+                <a href="patientList?sort=<%= columnName %><%= colParams %>">▲</a>
+                <a href="patientList?sortDesc=<%= columnName %><%= colParams %>">▼</a>
+              </span>
+            </th>
           <% } %>
-          <td>
-            <a href="editPatient?index=<%= patient.get("__idx__") %>">Edit</a>
-            <form method="POST" action="deletePatient" style="display:inline">
-              <input type="hidden" name="index" value="<%= patient.get("__idx__") %>"/>
-              <button type="submit">Delete</button>
-            </form>
-          </td>
+          <th>Actions</th>
         </tr>
-      <% } %>
-    </tbody>
-  </table>
-  <%
-    }
-  %>
+      </thead>
+      <tbody>
+        <% for (Map<String, String> patient : patientData) { %>
+          <tr>
+            <% for (String columnName : selectedColumns) { %>
+              <td><%= patient.get(columnName) != null ? patient.get(columnName) : "" %></td>
+            <% } %>
+            <td>
+              <div class="actions-cell">
+                <a href="editPatient?index=<%= patient.get("__idx__") %>" class="btn btn-primary">Edit</a>
+                <form method="POST" action="deletePatient">
+                  <input type="hidden" name="index" value="<%= patient.get("__idx__") %>"/>
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
 
 </div>
 <jsp:include page="/footer.jsp"/>
