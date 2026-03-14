@@ -1,4 +1,4 @@
-# COMP0004 Java Web Application — Patient Data App
+# JavaWebApp — Patient Data App
 
 ## Overview
 
