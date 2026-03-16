@@ -6,15 +6,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 public class JSONWriter {
-
-  // Writes DataFrame to a file in JSON format.
   public static void write(DataFrame dataFrame, String filePath) throws IOException {
     try (Writer writer = new FileWriter(filePath)) {
       write(dataFrame, writer);
     }
   }
 
-  // Writes DataFrame to any Writer (e.g. HTTP response stream).
   public static void write(DataFrame dataFrame, Writer writer) throws IOException {
     ArrayList<String> columnNames = dataFrame.getColumnNames();
     int rowCount = dataFrame.getRowCount();

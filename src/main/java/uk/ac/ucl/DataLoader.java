@@ -1,7 +1,3 @@
-/* Read a .csv data file and load the data into an empty DataFrame.
-The Column names are found as the first row in the .csv data file. It should
-have a method that returns a filled DataFrame. */
-
 package uk.ac.ucl;
 
 import java.io.BufferedReader;

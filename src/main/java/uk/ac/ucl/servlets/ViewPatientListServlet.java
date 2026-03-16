@@ -11,10 +11,13 @@ import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.ModelFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The ViewPatientListServlet handles HTTP requests for displaying the full list of patients.
@@ -42,8 +45,7 @@ public class ViewPatientListServlet extends HttpServlet
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
   {
     try {
-      // Get the singleton instance of the Model.
-      // The Model handles the actual data processing and data retrieval.
+      // get the singleton instance of the Model
       Model model = ModelFactory.getModel();
       
       List<String> columnNames = model.getColumnNames();
@@ -61,10 +63,20 @@ public class ViewPatientListServlet extends HttpServlet
         patientData = model.getPatientData();
 
       String[] selectedCols = request.getParameterValues("col");
-      List<String> selectedColumns = (selectedCols != null && selectedCols.length > 0)
-          ? Arrays.asList(selectedCols)
-          : columnNames;
-
+      List<String> selectedColumns;
+      if (selectedCols != null && selectedCols.length > 0) {
+        selectedColumns = Arrays.asList(selectedCols);
+      } else {
+        // keep these identifiers hidden by default until the user opts in
+        Set<String> defaultHiddenColumns = new HashSet<>(
+            Arrays.asList("DEATHDATE", "SSN", "DRIVERS", "PASSPORT", "SUFFIX", "MAIDEN"));
+        selectedColumns = new ArrayList<>();
+        for (String columnName : columnNames) {
+          if (!defaultHiddenColumns.contains(columnName)) {
+            selectedColumns.add(columnName);
+          }
+        }
+      }
 
       Map<String, Integer> genderCounts = new LinkedHashMap<>();
       Map<String, Integer> raceCounts   = new LinkedHashMap<>();
@@ -77,7 +89,6 @@ public class ViewPatientListServlet extends HttpServlet
       request.setAttribute("genderCounts", genderCounts);
       request.setAttribute("raceCounts",   raceCounts);
 
-      // 5. Add the data to the request object.
       request.setAttribute("columnNames", columnNames);
       request.setAttribute("selectedColumns", selectedColumns);
       request.setAttribute("patientData", patientData);
@@ -88,8 +99,6 @@ public class ViewPatientListServlet extends HttpServlet
       RequestDispatcher dispatch = context.getRequestDispatcher("/patientList.jsp");
       dispatch.forward(request, response);
     } catch (Exception e) {
-      // Exception Handling.
-      // If there is an issue loading the model or data, log the error and display it on the patient list page.
       request.setAttribute("errorMessage", "Error: " + e.getMessage());
       ServletContext context = getServletContext();
       RequestDispatcher dispatch = context.getRequestDispatcher("/patientList.jsp");

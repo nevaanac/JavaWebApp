@@ -4,7 +4,7 @@
 
 This project is a Java web application built with servlets that allows users to view, search, sort, edit, and visualise patient data stored in a CSV file (`data/patients100.csv`).
 
-When the application starts, it loads the patient dataset into memory. From there, users can interact with the data through a web interface — browsing the table, filtering results, updating records, and exporting the data.
+When the application starts, it loads the patient dataset into memory. From there, users can interact with the data through a web interface by browsing the table, filtering and sorting results, updating records (editing patient details and adding new patients), and exporting the data.
 
 ---
 

@@ -25,7 +25,7 @@ public class DataFrame {
         return dataFrame.get(0).getSize();
     }
 
-    public String getValue(String columnName, int row){ // get a row value from a column.
+    public String getValue(String columnName, int row){
         for (int i=0; i<dataFrame.size(); i++){
             if (dataFrame.get(i).getName().equals(columnName)){
                 return dataFrame.get(i).getRowValue(row);
